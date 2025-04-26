@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  build-test:
+    name: Build & Test (matrix)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [ '1.22' ]
+        platform: [ linux/amd64, linux/arm64 ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU (for ARM64)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: ${{ matrix.platform }}
+
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/go/bin
+          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ runner.os }}-go-${{ matrix.go-version }}-
+
+      - name: Tidying & Vet
+        run: |
+          go mod tidy -e
+          go vet ./...
+
+      - name: Run Unit Tests
+        run: go test ./... -v
+
+      - name: Build binary
+        run: |
+          arch=$(echo "${{ matrix.platform }}" | cut -d'/' -f2)
+          CGO_ENABLED=0 GOOS=linux GOARCH=$arch go build -o server ./cmd/server
