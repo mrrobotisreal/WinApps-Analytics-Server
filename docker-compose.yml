@@ -1,6 +1,4 @@
 #Testing out something new...
-version: "3.9"
-
 services:
   # ──────────────────────────── core API / dashboard ────────────────────────────
   server:
