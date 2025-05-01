@@ -14,7 +14,6 @@ import (
 	"WinApps-Analytics-Server/internal/config"
 	"WinApps-Analytics-Server/internal/db"
 	"WinApps-Analytics-Server/internal/handlers"
-	"WinApps-Analytics-Server/internal/worker"
 )
 
 func main() {
@@ -22,9 +21,11 @@ func main() {
 
 	cfg := config.Load()
 
-	pg, redis := db.Init(context.Background(), cfg)
+	//pg, redis := db.Init(context.Background(), cfg)
+	//
+	//go worker.StartFlusher(context.Background(), pg, redis, cfg.FlushInterval)
 
-	go worker.StartFlusher(context.Background(), pg, redis, cfg.FlushInterval)
+	pg := db.InitPostgres(context.Background(), cfg)
 
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
@@ -33,7 +34,7 @@ func main() {
 
 	api := r.Group("/api")
 	{
-		api.POST("/event", handlers.NewEventHandler(cfg, redis))
+		//api.POST("/event", handlers.NewEventHandler(cfg, redis))
 		api.GET("/events", handlers.DashboardHandler(pg))
 	}
 
