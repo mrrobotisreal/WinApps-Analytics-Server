@@ -2,7 +2,9 @@
 services:
   # ──────────────────────────── core API / dashboard ────────────────────────────
   server:
-    build: .
+    build:
+      context: .
+      target: build-server
     command: ["/app/server"]
     ports:
       - "17177:17177"
@@ -17,7 +19,9 @@ services:
 
   # ──────────────────────────── lightweight ingest (HTTP → Kafka) ───────────────
   ingest:
-    build: .
+    build:
+      context: .
+      target: build-ingest
     command: ["/app/ingest"]
     ports:
       - "17178:8080"
@@ -31,7 +35,9 @@ services:
 
   # ──────────────────────────── Kafka → Redis/Postgres consumer ────────────────
   consumer:
-    build: .
+    build:
+      context: .
+      target: build-consumer
     command: ["/app/consumer"]
     depends_on: [kafka, redis, db]
     environment:
