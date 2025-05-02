@@ -23,6 +23,7 @@ services:
       context: .
       target: build-ingest
     command: ["/app/ingest"]
+    user: root
     ports:
       - "17178:8080"
     environment:
