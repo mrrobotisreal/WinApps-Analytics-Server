@@ -14,7 +14,7 @@ services:
       - TLS_CERT=/etc/letsencrypt/live/analytics.winapps.io/fullchain.pem
       - TLS_KEY=/etc/letsencrypt/live/analytics.winapps.io/privkey.pem
     volumes:
-      - /etc/letsencrypt/live/analytics.winapps.io:/etc/letsencrypt/live/analytics.winapps.io:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on: [db, redis]
 
   # ──────────────────────────── lightweight ingest (HTTP → Kafka) ───────────────
@@ -31,7 +31,7 @@ services:
       - TLS_CERT=/etc/letsencrypt/live/analytics.winapps.io/fullchain.pem
       - TLS_KEY=/etc/letsencrypt/live/analytics.winapps.io/privkey.pem
     volumes:
-      - /etc/letsencrypt/live/analytics.winapps.io:/etc/letsencrypt/live/analytics.winapps.io:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on: [kafka]
 
   # ──────────────────────────── Kafka → Redis/Postgres consumer ────────────────
